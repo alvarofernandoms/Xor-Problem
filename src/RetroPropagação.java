@@ -7,10 +7,13 @@ public class RetroPropagação {
 	static double[] w2CamadaDeSaida = new double [3];
 	static double[][] entrada = new double[4][2];
 	static double[] saida = new double[4];
+	static double[] saidaCalculada = new double[4];
 	static double[] x = new double[2]; 
 	static double x0Bias=1.0;
 	static double H0Bias=1.0;
 	static double[] hidden = new double[2];
+	static double erroSaida=0;
+	static double erroIntermediario=0;
 	
 	static final int numMaximoEpoca=15;
 	
@@ -54,7 +57,10 @@ public class RetroPropagação {
 	
 	private static void execucao(double[] entrada, int index){
 		sinapseHidden(entrada);
-		saida[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
+		saidaCalculada[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
+		erroSaida = saida[index]*(1-saida[index])*(saidaCalculada[index]-saida[index]);
+		
+		
 	}
 	
 	private static void treinarRede(){
