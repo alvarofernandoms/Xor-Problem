@@ -13,9 +13,17 @@ public class RetroPropagação {
 	static double H0Bias=1.0;
 	static double[] hidden = new double[2];
 	static double erroSaida=0;
-	static double erroIntermediario=0;
+	static double[] erroIntermediario= new double[3];
 	
 	static final int numMaximoEpoca=15;
+	
+	static private double somatorio(double n, double[] vetor) {
+		double soma = 0;
+		for (int linha = 0; linha < vetor.length; linha++) {
+			soma= soma + (n*vetor[linha]);
+		}		
+		return soma;
+	}
 	
 	private static void iniciandoPesosDaEntrada(){
 		for (int coluna = 0; coluna < w1CamadaDeEntrada.length; coluna++) {
@@ -60,7 +68,9 @@ public class RetroPropagação {
 		saidaCalculada[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
 		erroSaida = saida[index]*(1-saida[index])*(saidaCalculada[index]-saida[index]);
 		
-		
+		for (int linha = 0; linha < hidden.length; linha++) {
+			erroIntermediario[linha+1] = hidden[linha]*(1-hidden[linha])*(somatorio(erroSaida, w2CamadaDeSaida));
+		}
 	}
 	
 	private static void treinarRede(){
