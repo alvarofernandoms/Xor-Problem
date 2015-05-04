@@ -68,9 +68,13 @@ public class RetroPropagação {
 		}
 	}
 	
-	private static void execucao(double[] entrada, int index){
-		sinapseHidden(entrada);
+	private static void execucao(double[] xEntrada, int index){
+		sinapseHidden(xEntrada);
 		saidaCalculada[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
+		
+		System.out.println("Entrada: "+xEntrada[0]+" "+xEntrada[1]);
+		System.out.println("Saida Calculada:"+saidaCalculada[index]+"\n");
+		
 		erroSaida = saida[index]*(1-saida[index])*(saidaCalculada[index]-saida[index]);
 		
 		erroIntermediario[0]=H0Bias*(1-H0Bias)*somatorio(erroSaida, w2CamadaDeSaida);
@@ -79,16 +83,22 @@ public class RetroPropagação {
 		}
 		
 		erroW2[0]=alphaTaxaDeAprendizagem * erroSaida * H0Bias ;
-		for (int linha = 0; linha < w2CamadaDeSaida.length; linha++) {
+		w2CamadaDeSaida[0]= w2CamadaDeSaida[0]+erroW2[0];
+		
+		for (int linha = 0; linha < hidden.length; linha++) {
 			erroW2[linha+1]=alphaTaxaDeAprendizagem * erroSaida * hidden[linha];
+			w2CamadaDeSaida[linha+1]= w2CamadaDeSaida[linha+1]+erroW2[linha+1];
 		}
 		
 		erroW1[0][0]=alphaTaxaDeAprendizagem*erroIntermediario[0]*x0Bias;
 		erroW1[1][0]=alphaTaxaDeAprendizagem*erroIntermediario[0]*x0Bias;
 		
-		for (int linha = 0; linha < w1CamadaDeEntrada[0].length; linha++) {
-			erroW1[0][linha+1]=alphaTaxaDeAprendizagem*erroIntermediario[linha+1]*entrada[linha];
-			erroW1[1][linha+1]=alphaTaxaDeAprendizagem*erroIntermediario[linha+1]*entrada[linha];
+		for (int linha = 0; linha < entrada[0].length; linha++) {
+			erroW1[0][linha+1]=alphaTaxaDeAprendizagem*erroIntermediario[linha+1]*xEntrada[linha];
+			w1CamadaDeEntrada[0][linha+1]= w1CamadaDeEntrada[0][linha+1]+erroW1[0][linha+1];
+			
+			erroW1[1][linha+1]=alphaTaxaDeAprendizagem*erroIntermediario[linha+1]*xEntrada[linha];
+			w1CamadaDeEntrada[1][linha+1]= w1CamadaDeEntrada[1][linha+1]+erroW1[1][linha+1];
 		}
 		
 	}
@@ -96,19 +106,19 @@ public class RetroPropagação {
 	private static void treinarRede(){
 		iniciandoPesosDaEntrada();
 		iniciandoPesosDaSaida();
+		possiveisCombinacoes();
 		
 		for(int iteracoes=0;iteracoes<numMaximoEpoca;iteracoes++){
+			System.out.println("Epoca "+iteracoes+"\n");
 			execucao(entrada[0],0);
-//			sinapse(entrada[1]);
-//			sinapse(entrada[2]);
-//			sinapse(entrada[3]);
+			execucao(entrada[1], 1);
+			execucao(entrada[2], 2);
+			execucao(entrada[3], 3);
 		}
-		
-		
 	}
 	
 	public static void main(String[] args) {
-		possiveisCombinacoes();
+		treinarRede();
 	}
 
 }
