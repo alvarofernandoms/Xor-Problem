@@ -47,19 +47,19 @@ public class RetroPropagação {
 	private static void possiveisCombinacoes() {
 		entrada[0][0] = 0.0;
 		entrada[0][1] = 0.0;
-		saida[0] = 0.0;
+		saida[0] = 0.0001;
 		
 		entrada[1][0] = 0.0;
 		entrada[1][1] = 1.0;
-		saida[1] = 1.0;
+		saida[1] = 1.0001;
 		
 		entrada[2][0] = 1.0;
 		entrada[2][1] = 0.0;
-		saida[2] = 1.0;
+		saida[2] = 1.0001;
 		
 		entrada[3][0] = 1.0;
 		entrada[3][1] = 1.0;
-		saida[3] = 0.0;
+		saida[3] = 0.0001;
 	}
 	
 	private static void sinapseHidden(double[] xEntrada){
@@ -101,17 +101,17 @@ public class RetroPropagação {
 		for (int linha = 0; linha < entrada[0].length; linha++) {
 			erroW1[0][linha]=alphaTaxaDeAprendizagem*erroIntermediario[linha]*xEntrada[linha];
 			w1CamadaDeEntrada[0][linha]= w1CamadaDeEntrada[0][linha]+erroW1[0][linha];
-			System.out.println("Erro w1 0 "+linha+" :"+w1CamadaDeEntrada[0][linha]);
+			System.out.println("Erro w1 0 "+linha+" :"+erroW1[0][linha]);
 			
 //			System.out.println("Novo w1 0 "+(linha+1)+" :"+w1CamadaDeEntrada[0][linha+1]);
 			
 			erroW1[1][linha]=alphaTaxaDeAprendizagem*erroIntermediario[linha]*xEntrada[linha];
 			w1CamadaDeEntrada[1][linha]= w1CamadaDeEntrada[1][linha]+erroW1[1][linha];
-			System.out.println("Erro w1 1 "+linha+" :"+w1CamadaDeEntrada[1][linha]);
+			System.out.println("Erro w1 1 "+linha+" :"+erroW1[1][linha]);
 			
 //			System.out.println("Novo w1 1 "+(linha+1)+" :"+w1CamadaDeEntrada[1][linha+1]);
 		}
-		
+		System.out.println("\n");
 	}
 	
 	private static void treinarRede(){
