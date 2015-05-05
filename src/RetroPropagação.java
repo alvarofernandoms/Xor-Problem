@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 import javax.swing.text.TabableView;
 
 import funcaoTranmissao.Sigmoide;
@@ -5,8 +7,10 @@ import funcaoTranmissao.Sigmoide;
 
 public class RetroPropagação {
 	
+	static Scanner scan= new Scanner(System.in);
+	
 	static double[][] w1CamadaDeEntrada = new double [2][3];
-	static double[][] erroW1 = new double [2][3];
+	static double[][] erroW1 = new double [2][2];
 	static double[] w2CamadaDeSaida = new double [3];
 	static double[] erroW2=new double[2];
 	static double[][] entrada = new double[4][2];
@@ -45,21 +49,21 @@ public class RetroPropagação {
 	}
 	
 	private static void possiveisCombinacoes() {
-		entrada[0][0] = 0.0001;
-		entrada[0][1] = 0.0001;
-		saida[0] = 0.0001;
+		entrada[0][0] = 0.1;
+		entrada[0][1] = 0.1;
+		saida[0] = 0.1;
 		
-		entrada[1][0] = 0.0001;
-		entrada[1][1] = 1.0001;
-		saida[1] = 1.0001;
+		entrada[1][0] = 0.1;
+		entrada[1][1] = 1.1;
+		saida[1] = 1.1;
 		
-		entrada[2][0] = 1.0001;
-		entrada[2][1] = 0.0001;
-		saida[2] = 1.0001;
+		entrada[2][0] = 1.1;
+		entrada[2][1] = 0.1;
+		saida[2] = 1.1;
 		
-		entrada[3][0] = 1.0001;
-		entrada[3][1] = 1.0001;
-		saida[3] = 0.0001;
+		entrada[3][0] = 1.1;
+		entrada[3][1] = 1.1;
+		saida[3] = 0.1;
 	}
 	
 	private static void sinapseHidden(double[] xEntrada){
@@ -69,6 +73,18 @@ public class RetroPropagação {
 	}
 	
 	private static void execucao(double[] xEntrada, int index){
+		System.out.println("W1 0,0 :"+w1CamadaDeEntrada[0][0]);
+		System.out.println("W1 0,1 :"+w1CamadaDeEntrada[0][1]);
+		System.out.println("W1 0,2 :"+w1CamadaDeEntrada[0][2]);
+		
+		System.out.println("W1 1,0 :"+w1CamadaDeEntrada[1][0]);
+		System.out.println("W1 1,1 :"+w1CamadaDeEntrada[1][1]);
+		System.out.println("W1 1,2:"+w1CamadaDeEntrada[1][2]);
+		
+		System.out.println("W2 0 :"+w2CamadaDeSaida[0]);
+		System.out.println("W2 1 :"+w2CamadaDeSaida[1]);
+		System.out.println("W2 2 :"+w2CamadaDeSaida[2]);
+		
 		sinapseHidden(xEntrada);
 		saidaCalculada[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
 		
@@ -89,9 +105,9 @@ public class RetroPropagação {
 		
 		for (int linha = 0; linha < hidden.length; linha++) {
 			erroW2[linha]=alphaTaxaDeAprendizagem * erroSaida * hidden[linha];
-			System.out.println("Erro w2 "+linha+" :"+erroW2[linha]);
-			w2CamadaDeSaida[linha]= w2CamadaDeSaida[linha+1]+erroW2[linha];
+//			System.out.println("Erro w2 "+linha+" :"+erroW2[linha]);
 			
+			w2CamadaDeSaida[linha+1]= w2CamadaDeSaida[linha+1]+erroW2[linha];
 //			System.out.println("Novo w2 "+(linha+1)+" :"  +w2CamadaDeSaida[linha+1]);
 		}
 		
@@ -100,18 +116,26 @@ public class RetroPropagação {
 				
 		for (int linha = 0; linha < entrada[0].length; linha++) {
 			erroW1[0][linha]=alphaTaxaDeAprendizagem*erroIntermediario[linha]*xEntrada[linha];
-			w1CamadaDeEntrada[0][linha]= w1CamadaDeEntrada[0][linha]+erroW1[0][linha];
-			System.out.println("Erro w1 0 "+linha+" :"+erroW1[0][linha]);
+//			System.out.println("Erro w1 0 "+linha+" :"+erroW1[0][linha]);
 			
+			w1CamadaDeEntrada[0][linha+1]= w1CamadaDeEntrada[0][linha+1]+erroW1[0][linha];			
 //			System.out.println("Novo w1 0 "+(linha+1)+" :"+w1CamadaDeEntrada[0][linha+1]);
 			
 			erroW1[1][linha]=alphaTaxaDeAprendizagem*erroIntermediario[linha]*xEntrada[linha];
-			w1CamadaDeEntrada[1][linha]= w1CamadaDeEntrada[1][linha]+erroW1[1][linha];
-			System.out.println("Erro w1 1 "+linha+" :"+erroW1[1][linha]);
+//			System.out.println("Erro w1 1 "+linha+" :"+erroW1[1][linha]);
 			
+			w1CamadaDeEntrada[1][linha+1]= w1CamadaDeEntrada[1][linha+1]+erroW1[1][linha];
 //			System.out.println("Novo w1 1 "+(linha+1)+" :"+w1CamadaDeEntrada[1][linha+1]);
 		}
 		System.out.println("\n");
+	}
+	
+	private static void executaRede(double[] xEntrada){
+		double y;
+		sinapseHidden(xEntrada);
+		y=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
+		
+		System.out.println("RNA: "+y);
 	}
 	
 	private static void treinarRede(){
@@ -129,7 +153,15 @@ public class RetroPropagação {
 	}
 	
 	public static void main(String[] args) {
+		double[] minhaEntrada = new double[2];
 		treinarRede();
+		
+		System.out.println("X1:");
+		minhaEntrada[0]=scan.nextDouble();
+		System.out.println("X2:");
+		minhaEntrada[1]=scan.nextDouble();
+		
+		executaRede(minhaEntrada);
 	}
 
 }
