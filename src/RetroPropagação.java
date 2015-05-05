@@ -45,20 +45,20 @@ public class RetroPropagação {
 	}
 	
 	private static void possiveisCombinacoes() {
-		entrada[0][0] = 0.0;
-		entrada[0][1] = 0.0;
+		entrada[0][0] = 0.0001;
+		entrada[0][1] = 0.0001;
 		saida[0] = 0.0001;
 		
-		entrada[1][0] = 0.0;
-		entrada[1][1] = 1.0;
+		entrada[1][0] = 0.0001;
+		entrada[1][1] = 1.0001;
 		saida[1] = 1.0001;
 		
-		entrada[2][0] = 1.0;
-		entrada[2][1] = 0.0;
+		entrada[2][0] = 1.0001;
+		entrada[2][1] = 0.0001;
 		saida[2] = 1.0001;
 		
-		entrada[3][0] = 1.0;
-		entrada[3][1] = 1.0;
+		entrada[3][0] = 1.0001;
+		entrada[3][1] = 1.0001;
 		saida[3] = 0.0001;
 	}
 	
