@@ -23,8 +23,10 @@ public class RetroPropagação {
 	static double erroSaida=0;
 	static double[] erroIntermediario= new double[2];
 	
-	static final int numMaximoEpoca=15;
-	static final double alphaTaxaDeAprendizagem=0.5;
+	static final int numMaximoEpoca=30;
+	static final double erroAceitavel=0.0001;
+	
+	static double alphaTaxaDeAprendizagem;
 	
 	static private double somatorio(double n, double[] vetor) {
 		double soma = 0;
@@ -73,26 +75,26 @@ public class RetroPropagação {
 	}
 	
 	private static void execucao(double[] xEntrada, int index){
-		System.out.println("W1 0,0 :"+w1CamadaDeEntrada[0][0]);
-		System.out.println("W1 0,1 :"+w1CamadaDeEntrada[0][1]);
-		System.out.println("W1 0,2 :"+w1CamadaDeEntrada[0][2]);
-		
-		System.out.println("W1 1,0 :"+w1CamadaDeEntrada[1][0]);
-		System.out.println("W1 1,1 :"+w1CamadaDeEntrada[1][1]);
-		System.out.println("W1 1,2:"+w1CamadaDeEntrada[1][2]);
-		
-		System.out.println("W2 0 :"+w2CamadaDeSaida[0]);
-		System.out.println("W2 1 :"+w2CamadaDeSaida[1]);
-		System.out.println("W2 2 :"+w2CamadaDeSaida[2]);
+//		System.out.println("W1 0,0 :"+w1CamadaDeEntrada[0][0]);
+//		System.out.println("W1 0,1 :"+w1CamadaDeEntrada[0][1]);
+//		System.out.println("W1 0,2 :"+w1CamadaDeEntrada[0][2]);
+//		
+//		System.out.println("W1 1,0 :"+w1CamadaDeEntrada[1][0]);
+//		System.out.println("W1 1,1 :"+w1CamadaDeEntrada[1][1]);
+//		System.out.println("W1 1,2:"+w1CamadaDeEntrada[1][2]);
+//		
+//		System.out.println("W2 0 :"+w2CamadaDeSaida[0]);
+//		System.out.println("W2 1 :"+w2CamadaDeSaida[1]);
+//		System.out.println("W2 2 :"+w2CamadaDeSaida[2]);
 		
 		sinapseHidden(xEntrada);
 		saidaCalculada[index]=Sigmoide.funcaoSigmoide(w2CamadaDeSaida,hidden);
 		
-		System.out.println("Entrada: "+xEntrada[0]+" "+xEntrada[1]);
-		System.out.println("Saida Calculada:"+saidaCalculada[index]+"\n");
+//		System.out.println("Entrada: "+xEntrada[0]+" "+xEntrada[1]);
+//		System.out.println("Saida Calculada:"+saidaCalculada[index]+"\n");
 		
 		erroSaida = saida[index]*(1-saida[index])*(saidaCalculada[index]-saida[index]);
-		System.out.println("Erro Saída: "+erroSaida);
+//		System.out.println("Erro Saída: "+erroSaida);
 		
 		//erroIntermediario[0]=H0Bias*(1-H0Bias)*somatorio(erroSaida, w2CamadaDeSaida);
 		for (int linha = 0; linha < hidden.length; linha++) {
@@ -127,7 +129,7 @@ public class RetroPropagação {
 			w1CamadaDeEntrada[1][linha+1]= w1CamadaDeEntrada[1][linha+1]+erroW1[1][linha];
 //			System.out.println("Novo w1 1 "+(linha+1)+" :"+w1CamadaDeEntrada[1][linha+1]);
 		}
-		System.out.println("\n");
+//		System.out.println("\n");
 	}
 	
 	private static void executaRede(double[] xEntrada){
@@ -144,24 +146,55 @@ public class RetroPropagação {
 		possiveisCombinacoes();
 		
 		for(int iteracoes=0;iteracoes<numMaximoEpoca;iteracoes++){
-			System.out.println("Epoca "+iteracoes+"\n");
+//			System.out.println("Epoca "+iteracoes+"\n");
 			execucao(entrada[0],0);
 			execucao(entrada[1], 1);
 			execucao(entrada[2], 2);
 			execucao(entrada[3], 3);
+			
+			if(Math.abs((erroSaida-saida[3])) <erroAceitavel){
+				break;
+			}			
 		}
+		
+		System.out.println("REDE TREINADA");
+		System.out.print("0 e 0 - ");
+		executaRede(entrada[0]);
+		
+		System.out.print("0 e 1 - ");
+		executaRede(entrada[1]);
+		
+		System.out.print("1 e 0 - ");
+		executaRede(entrada[2]);
+		
+		System.out.print("1 e 1 - ");
+		executaRede(entrada[3]);
 	}
 	
 	public static void main(String[] args) {
 		double[] minhaEntrada = new double[2];
+		String decisao=new String();
+		System.out.print("Digite uma taxa de aprendizagem :");
+		alphaTaxaDeAprendizagem=scan.nextDouble();
+		System.out.println("\n");
+		
 		treinarRede();
+		System.out.print("Executar rede:[sim/nao]: ");
+		decisao=scan.next();
 		
-		System.out.println("X1:");
-		minhaEntrada[0]=scan.nextDouble();
-		System.out.println("X2:");
-		minhaEntrada[1]=scan.nextDouble();
+		while(decisao.equals("sim")){
+			
+			System.out.print("X1:");
+			minhaEntrada[0]=scan.nextDouble();
+			System.out.print("X2:");
+			minhaEntrada[1]=scan.nextDouble();
+			
+			executaRede(minhaEntrada);
+			
+			System.out.print("Executar rede:[sim/nao]: ");
+			decisao=scan.next();
+		}
 		
-		executaRede(minhaEntrada);
 	}
 
 }
