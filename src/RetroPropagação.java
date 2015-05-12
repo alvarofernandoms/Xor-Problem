@@ -1,7 +1,5 @@
 import java.util.Scanner;
 
-import javax.swing.text.TabableView;
-
 import funcaoTranmissao.Sigmoide;
 
 
@@ -23,7 +21,7 @@ public class RetroPropagação {
 	static double erroSaida=0;
 	static double[] erroIntermediario= new double[2];
 	
-	static final int numMaximoEpoca=30;
+	static final int numMaximoEpoca=50;
 	static final double erroAceitavel=0.0001;
 	
 	static double alphaTaxaDeAprendizagem;
@@ -39,7 +37,7 @@ public class RetroPropagação {
 	private static void iniciandoPesosDaEntrada(){
 		for (int coluna = 0; coluna < w1CamadaDeEntrada.length; coluna++) {
 			for (int linha = 0; linha < w1CamadaDeEntrada[coluna].length; linha++) {
-				w1CamadaDeEntrada[coluna][linha] = 1.0;
+				w1CamadaDeEntrada[coluna][linha] = 1;
 			}
 		}
 	}
@@ -71,6 +69,7 @@ public class RetroPropagação {
 	private static void sinapseHidden(double[] xEntrada){
 		for (int linha = 0; linha < hidden.length; linha++) {
 			hidden[linha]= Sigmoide.funcaoSigmoide(w1CamadaDeEntrada[linha], xEntrada);
+//			System.out.println("Hidden"+linha+" :"+hidden[linha]);
 		}
 	}
 	
@@ -92,11 +91,11 @@ public class RetroPropagação {
 		
 //		System.out.println("Entrada: "+xEntrada[0]+" "+xEntrada[1]);
 //		System.out.println("Saida Calculada:"+saidaCalculada[index]+"\n");
-		
+//		
 		erroSaida = saida[index]*(1-saida[index])*(saidaCalculada[index]-saida[index]);
 //		System.out.println("Erro Saída: "+erroSaida);
 		
-		//erroIntermediario[0]=H0Bias*(1-H0Bias)*somatorio(erroSaida, w2CamadaDeSaida);
+		erroIntermediario[0]=H0Bias*(1-H0Bias)*somatorio(erroSaida, w2CamadaDeSaida);
 		for (int linha = 0; linha < hidden.length; linha++) {
 			erroIntermediario[linha] = hidden[linha]*(1-hidden[linha])*(somatorio(erroSaida, w2CamadaDeSaida));
 		}
@@ -129,7 +128,6 @@ public class RetroPropagação {
 			w1CamadaDeEntrada[1][linha+1]= w1CamadaDeEntrada[1][linha+1]+erroW1[1][linha];
 //			System.out.println("Novo w1 1 "+(linha+1)+" :"+w1CamadaDeEntrada[1][linha+1]);
 		}
-//		System.out.println("\n");
 	}
 	
 	private static void executaRede(double[] xEntrada){
@@ -174,11 +172,36 @@ public class RetroPropagação {
 	public static void main(String[] args) {
 		double[] minhaEntrada = new double[2];
 		String decisao=new String();
+		possiveisCombinacoes();
+		iniciandoPesosDaEntrada();
+		iniciandoPesosDaSaida();
+		
+		
 		System.out.print("Digite uma taxa de aprendizagem :");
 		alphaTaxaDeAprendizagem=scan.nextDouble();
 		System.out.println("\n");
+		System.out.println("REDE NÃO TREINADA");
+		System.out.print("0 e 0 - ");
+//		System.out.println("Vetor entrada: "+entrada[0][0]+" "+entrada[0][1]);
+		
+		executaRede(entrada[0]);
+		
+		System.out.print("0 e 1 - ");
+//		System.out.println("Vetor entrada: "+entrada[1][0]+" "+entrada[1][1]);
+		executaRede(entrada[1]);
+		
+		System.out.print("1 e 0 - ");
+//		System.out.println("Vetor entrada: "+entrada[2][0]+" "+entrada[2][1]);
+		executaRede(entrada[2]);
+		
+		System.out.print("1 e 1 - ");
+//		System.out.println("Vetor entrada: "+entrada[3][0]+" "+entrada[3][1]);
+		executaRede(entrada[3]);
+		
 		
 		treinarRede();
+		
+		
 		System.out.print("Executar rede:[sim/nao]: ");
 		decisao=scan.next();
 		
@@ -194,7 +217,6 @@ public class RetroPropagação {
 			System.out.print("Executar rede:[sim/nao]: ");
 			decisao=scan.next();
 		}
-		
 	}
 
 }
